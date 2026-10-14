@@ -1,0 +1,57 @@
+---
+import { orvasContent } from "@/content/orvas-content";
+---
+
+<div class="loader" data-loader role="progressbar" aria-label={orvasContent.loader.label} aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+  <div class="loader-line">
+    <span class="loader-count" data-loader-count>0%</span>
+    <span class="loader-zone" data-loader-zone></span>
+    <span class="loader-square"></span>
+  </div>
+</div>
+
+<style>
+  .loader {
+    display: none;
+  }
+  :global(html.is-loading) .loader {
+    position: fixed;
+    inset: 0;
+    z-index: 150;
+    display: block;
+    background: var(--bg-deep);
+    transition: opacity 0.23s ease;
+  }
+  :global(html.is-loading) {
+    overflow: hidden;
+  }
+  .loader.is-leaving {
+    opacity: 0;
+  }
+  .loader-line {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    top: 50vh;
+    top: 50svh;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    height: 1px;
+  }
+  .loader-count {
+    width: 31px;
+    font-size: var(--fs-label);
+    font-variant-numeric: tabular-nums;
+  }
+  .loader-zone {
+    height: 1px;
+    width: 0;
+    background: var(--ink);
+  }
+  .loader-square {
+    width: 7px;
+    height: 7px;
+    background: var(--ink);
+  }
+</style>

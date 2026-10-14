@@ -1,0 +1,50 @@
+---
+/**
+ * Offform section label: "LABEL — LABEL ■". The hairline grows with scroll
+ * (CSS var --p, 0..1) until the second label reaches the right edge.
+ * --p is written by motion/lines.ts, or by a pinned section's own timeline
+ * when the element carries data-managed.
+ */
+interface Props {
+  a: string;
+  b: string;
+  managed?: boolean;
+  as?: "h1" | "h2" | "p";
+  id?: string;
+}
+const { a, b, managed = false, as: Tag = "h2", id } = Astro.props;
+---
+
+<Tag class="sline" data-sline data-managed={managed ? "" : undefined} id={id}>
+  <span class="sline-a">{a}</span>
+  <span class="sline-rule" aria-hidden="true"></span>
+  <span class="sline-b">{b}<span class="sq" aria-hidden="true"></span></span>
+</Tag>
+
+<style>
+  .sline {
+    --p: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding-inline: var(--gutter);
+    white-space: nowrap;
+  }
+  :global(html:not(.js)) .sline,
+  :global(.reduced) .sline {
+    --p: 1;
+  }
+  .sline-rule {
+    flex: 0 1 auto;
+    min-width: 14px;
+    width: calc(var(--p) * 100%);
+    height: 1px;
+    background: currentColor;
+  }
+  .sline-b {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex: none;
+  }
+</style>

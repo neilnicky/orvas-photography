@@ -1,0 +1,315 @@
+@import "@fontsource/courier-prime/400.css";
+@import "@fontsource/courier-prime/700.css";
+
+/* =========================================================
+   TOKENS
+   Derived from docs/reference-analysis.md §2, adapted in
+   docs/design-direction.md (accent, ink).
+   ========================================================= */
+:root {
+  --bg: #0b0b0b;
+  --bg-deep: #000;
+  --ink: #f4f1ee;
+  --ink-dim: rgb(244 241 238 / 0.56);
+  --ink-faint: rgb(244 241 238 / 0.18);
+  --accent: #ff3344;
+
+  --font-mono: "Courier Prime", "Courier New", Courier, monospace;
+  --fs-micro: 10px;
+  --lh-micro: 14px;
+  --fs-label: 9px;
+  --fs-logo: 12px;
+  --tracking: 0.045em;
+
+  --gutter: 20px;
+  --header-top: 28px;
+  --header-h: 56px;
+  --section-pad-top: 100px;
+
+  /* Easing A: UI (underlines, rolls). Easing B: curtains/reveals. */
+  --ease-ui: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-ui: 0.35s;
+  --dur-curtain: 0.65s;
+  --dur-fade: 0.22s;
+
+  --square: 6px;
+
+  color-scheme: dark;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --gutter: 16px;
+    --section-pad-top: 84px;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  background: var(--bg);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: var(--fs-micro);
+  line-height: var(--lh-micro);
+  letter-spacing: var(--tracking);
+  text-transform: uppercase;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+img {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+p,
+h1,
+h2,
+h3,
+ul,
+ol,
+dl,
+dd {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg);
+}
+
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  left: var(--gutter);
+  top: 8px;
+  z-index: 200;
+  padding: 6px 8px;
+  background: var(--ink);
+  color: var(--bg);
+  transform: translateY(-200%);
+  transition: transform var(--dur-fade) ease;
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Small solid square used as bullet / affordance. */
+.sq {
+  display: inline-block;
+  width: var(--square);
+  height: var(--square);
+  background: currentColor;
+  flex: none;
+}
+
+.dim {
+  color: var(--ink-dim);
+}
+
+/* Reference 4-column row: label / taxonomy / paragraph / meta. */
+.row4 {
+  display: grid;
+  grid-template-columns: 22.7% 27.3% 1fr auto;
+  column-gap: 0;
+  padding-inline: var(--gutter);
+}
+.row4 > :nth-child(3) {
+  max-width: 44ch;
+}
+
+@media (max-width: 767px) {
+  .row4 {
+    grid-template-columns: 1fr 1fr;
+    row-gap: 18px;
+    column-gap: 16px;
+  }
+  .row4 > :nth-child(3) {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Meta pairs (right column) */
+.meta-pairs {
+  display: grid;
+  grid-template-columns: auto auto;
+  column-gap: 28px;
+  align-content: start;
+  justify-content: end;
+  text-align: right;
+}
+.meta-pairs dt {
+  color: var(--ink-dim);
+}
+
+/* Underline link with square, as reference "VIEW ALL TALENTS ■" */
+.ulink {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 8px;
+}
+.ulink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: currentColor;
+  transform-origin: left;
+  transition: transform var(--dur-ui) var(--ease-ui);
+}
+.ulink .sq {
+  transition: transform var(--dur-ui) var(--ease-ui);
+}
+@media (hover: hover) {
+  .ulink:hover {
+    color: var(--accent);
+  }
+  .ulink:hover .sq {
+    transform: translateX(-6px);
+  }
+}
+
+/* Vertical text roll used on list rows / nav hover. */
+.roll {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+}
+.roll > span {
+  display: block;
+  transition: transform var(--dur-ui) var(--ease-ui);
+}
+.roll > span + span {
+  position: absolute;
+  left: 0;
+  top: 100%;
+  color: var(--accent);
+}
+@media (hover: hover) {
+  a:hover .roll > span,
+  .is-active .roll > span {
+    transform: translateY(-100%);
+  }
+}
+a:focus-visible .roll > span {
+  transform: translateY(-100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* =========================================================
+   CURSOR — 12px square, difference blend (fine pointers only)
+   ========================================================= */
+@media (hover: hover) and (pointer: fine) {
+  .has-cursor,
+  .has-cursor * {
+    cursor: none !important;
+  }
+}
+.cursor {
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  mix-blend-mode: difference;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  will-change: transform;
+}
+.cursor.is-visible {
+  opacity: 1;
+}
+@media (forced-colors: active) {
+  .cursor {
+    display: none;
+  }
+}
+
+/* Canvas overlay used by motion/wave.ts */
+.wave-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}

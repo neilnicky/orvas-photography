@@ -1,0 +1,136 @@
+---
+import type { GetStaticPaths } from "astro";
+import Base from "@/layouts/Base.astro";
+import Img from "@/components/Img.astro";
+import SectionLine from "@/components/SectionLine.astro";
+import { orvasContent, series, type Series } from "@/content/orvas-content";
+import { archiveOrder, categoryLabel, coverOf, pad2, seriesHref } from "@/lib/content";
+
+export const getStaticPaths = (() => {
+  const ordered = archiveOrder();
+  return ordered.map((s, i) => ({
+    params: { slug: s.slug },
+    props: { s, next: ordered[(i + 1) % ordered.length]! },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  s: Series;
+  next: Series;
+}
+const { s, next } = Astro.props;
+const { workPage, brand, contact } = orvasContent;
+const sameTitle = series.filter((o) => o.title === s.title);
+const part = sameTitle.length > 1 ? ` (${sameTitle.indexOf(s) + 1}/${sameTitle.length})` : "";
+---
+
+<Base
+  title={`${s.title}${part} — ${brand.name}`}
+  description={`${s.title}, ${categoryLabel(s.category).toLowerCase()} series by ${brand.name} (${s.year}). ${s.images.length} frames.`}
+  image={coverOf(s)}
+>
+  <article class="series" aria-labelledby="series-title">
+    <SectionLine a={workPage.sourceLabel} b={categoryLabel(s.category)} as="p" />
+    <div class="row4 series-row">
+      <h1 id="series-title">{s.title}{part}</h1>
+      <p>{categoryLabel(s.category)} / {s.year}</p>
+      <p>{s.description ?? ""}</p>
+      <dl class="meta-pairs">
+        <dt>{workPage.framesLabel}</dt>
+        <dd>{pad2(s.images.length)}</dd>
+        <dt>Year</dt>
+        <dd>{s.year}</dd>
+      </dl>
+    </div>
+
+    <ol class="series-frames">
+      {
+        s.images.map((image, i) => (
+          <li class="series-frame">
+            <figure>
+              <span class="series-media" data-series-frame>
+                <Img image={image} sizes="(max-width: 767px) 100vw, 46vw" widths={[640, 960, 1400, 2000]} priority={i === 0} />
+              </span>
+              <figcaption class="dim">
+                {pad2(i + 1)} / {pad2(s.images.length)}
+              </figcaption>
+            </figure>
+          </li>
+        ))
+      }
+    </ol>
+
+    <nav class="series-nav" aria-label="Series navigation">
+      <a class="ulink" href="/work/">{workPage.backLabel}<span class="sq" aria-hidden="true"></span></a>
+      <a class="ulink" href={contact.instagramDm} target="_blank" rel="noopener noreferrer">
+        {contact.cta}<span class="visually-hidden"> on Instagram (opens in a new tab)</span><span class="sq" aria-hidden="true"></span>
+      </a>
+      <a class="ulink" href={seriesHref(next.slug)}>
+        {workPage.nextLabel}: {next.title}<span class="sq" aria-hidden="true"></span>
+      </a>
+    </nav>
+  </article>
+</Base>
+
+<style>
+  .series {
+    padding-top: var(--section-pad-top);
+    padding-bottom: 96px;
+  }
+  .series-row {
+    margin-top: 6px;
+    margin-bottom: 56px;
+  }
+  .series-frames {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 64px 8px;
+    padding-inline: var(--gutter);
+  }
+  /* Editorial rhythm: every third frame stands alone, offset to the right. */
+  .series-frame:nth-child(3n) {
+    grid-column: 2;
+  }
+  .series-frame:nth-child(3n + 1):last-child {
+    grid-column: 1 / -1;
+    width: 50%;
+    justify-self: center;
+  }
+  figure {
+    margin: 0;
+    display: grid;
+    gap: 10px;
+  }
+  .series-media {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    background: var(--bg-deep);
+  }
+  .series-media :global(img) {
+    width: 100%;
+    height: auto;
+  }
+  .series-nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 260px));
+    justify-content: space-between;
+    gap: 24px;
+    margin-top: 96px;
+    padding-inline: var(--gutter);
+  }
+  @media (max-width: 767px) {
+    .series-frames {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .series-frame:nth-child(3n),
+    .series-frame:nth-child(3n + 1):last-child {
+      grid-column: auto;
+      width: auto;
+    }
+    .series-nav {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

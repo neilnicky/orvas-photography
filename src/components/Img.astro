@@ -1,0 +1,36 @@
+---
+import { Picture } from "astro:assets";
+import type { ImageRef } from "@/content/orvas-content";
+import { resolveImage } from "@/lib/images";
+
+interface Props {
+  image: ImageRef;
+  /** Rendered width in CSS terms, e.g. "33vw" or "(max-width: 767px) 100vw, 33vw". */
+  sizes: string;
+  widths?: number[];
+  priority?: boolean;
+  class?: string;
+  decorative?: boolean;
+}
+
+const { image, sizes, widths = [480, 800, 1200, 1600, 2000], priority = false, class: className, decorative = false } = Astro.props;
+const meta = resolveImage(image.src);
+const usable = widths.filter((w) => w <= meta.width);
+if (usable.length === 0) usable.push(meta.width);
+---
+
+<Picture
+  src={meta}
+  alt={decorative ? "" : image.alt}
+  formats={["avif", "webp"]}
+  fallbackFormat="webp"
+  widths={usable}
+  sizes={sizes}
+  quality={78}
+  loading={priority ? "eager" : "lazy"}
+  decoding={priority ? "sync" : "async"}
+  fetchpriority={priority ? "high" : "auto"}
+  class={className}
+  style={image.focus ? `object-position:${image.focus}` : undefined}
+  draggable="false"
+/>

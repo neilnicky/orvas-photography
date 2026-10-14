@@ -1,0 +1,234 @@
+---
+import Img from "./Img.astro";
+import SectionLine from "./SectionLine.astro";
+import { orvasContent, series } from "@/content/orvas-content";
+import { categoryLabel, coverOf, getSeries, pad2, seriesHref } from "@/lib/content";
+const { index } = orvasContent;
+const lists = index.filters.map((f) => ({ ...f, items: f.series.map(getSeries) }));
+const counts = index.filters.map((f) => [f.label, String(series.filter((s) => s.category === f.category).length)] as const);
+---
+
+<section class="index" id={index.id} data-index aria-labelledby="index-title">
+  <div class="index-stage">
+    <SectionLine a={index.label[0]} b={index.label[1]} managed id="index-title" />
+    <div class="row4 index-row">
+      <p class="dim">{index.intro}</p>
+      <p>{index.taxonomy}</p>
+      <div class="filters" role="group" aria-label="Filter series">
+        {
+          lists.map((l, i) => (
+            <button type="button" class="filter" aria-pressed={i === 0 ? "true" : "false"} aria-controls={`index-${l.category}`} data-filter={l.category}>
+              {l.label}
+              <span class="sq" aria-hidden="true" />
+            </button>
+          ))
+        }
+      </div>
+      <dl class="meta-pairs">
+        {
+          counts.map(([k, v]) => (
+            <>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </>
+          ))
+        }
+        <dt>Total</dt>
+        <dd>{series.length}</dd>
+      </dl>
+    </div>
+
+    <div class="index-lists">
+      {
+        lists.map((l, li) => (
+          <ol class="index-list" id={`index-${l.category}`} data-list={l.category} hidden={li !== 0}>
+            {l.items.map((s, i) => (
+              <li>
+                <a class="index-row-link" href={seriesHref(s.slug)} data-preview={`${l.category}-${i}`}>
+                  <span class="dim">{pad2(i + 1)}</span>
+                  <span class="roll">
+                    <span>{s.title}</span>
+                    <span aria-hidden="true">{s.title}</span>
+                  </span>
+                  <span class="index-meta">
+                    {categoryLabel(s.category)} / {s.year}
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        ))
+      }
+      <a class="ulink index-archive" href={index.archiveCta.href}>{index.archiveCta.label}<span class="sq" aria-hidden="true"></span></a>
+    </div>
+  </div>
+
+  <div class="index-preview" data-index-preview aria-hidden="true">
+    {
+      lists.map((l) =>
+        l.items.map((s, i) => (
+          <div class="index-preview-frame" data-frame={`${l.category}-${i}`}>
+            <Img image={coverOf(s)} sizes="150px" widths={[300]} decorative />
+          </div>
+        )),
+      )
+    }
+  </div>
+</section>
+
+<style>
+  .index {
+    position: relative;
+    background: var(--bg);
+  }
+  :global(.js:not(.reduced)) .index {
+    height: 200vh;
+  }
+  .index-stage {
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--section-pad-top);
+    padding-bottom: 40px;
+  }
+  :global(.js:not(.reduced)) .index-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+  }
+  .index-row {
+    margin-top: 6px;
+  }
+  .filters {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+  .filter {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding-bottom: 6px;
+  }
+  .filter::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--ink-faint);
+    transition: background var(--dur-fade) ease;
+  }
+  .filter[aria-pressed="true"]::after {
+    background: var(--accent);
+  }
+  .filter .sq {
+    transition: transform var(--dur-ui) var(--ease-ui);
+  }
+  @media (hover: hover) {
+    .filter:hover .sq {
+      transform: translateX(4px);
+    }
+  }
+
+  .index-lists {
+    margin-top: auto;
+    display: grid;
+    gap: 28px;
+  }
+  .index-list li {
+    border-top: 1px solid var(--ink-faint);
+  }
+  .index-list li:last-child {
+    border-bottom: 1px solid var(--ink-faint);
+  }
+  .index-row-link {
+    display: grid;
+    grid-template-columns: 58px 1fr auto;
+    align-items: center;
+    height: 44px;
+    padding-inline: var(--gutter);
+  }
+  .index-meta {
+    color: var(--ink-dim);
+  }
+  @media (hover: hover) {
+    .index-row-link:hover,
+    .index-row-link:hover .index-meta {
+      color: var(--accent);
+    }
+  }
+  .index-row-link:focus-visible {
+    outline-offset: -2px;
+  }
+  .index-list.is-entering li {
+    animation: row-in 0.42s var(--ease-ui) both;
+    animation-delay: calc(var(--n, 0) * 28ms);
+  }
+  @keyframes row-in {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+  }
+  .index-archive {
+    justify-self: end;
+    width: 190px;
+    margin-right: var(--gutter);
+  }
+
+  .index-preview {
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 20;
+    width: 104px;
+    height: 138px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity var(--dur-fade) ease;
+  }
+  .index-preview.is-visible {
+    opacity: 1;
+  }
+  .index-preview-frame {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.18s ease;
+  }
+  .index-preview-frame.is-active {
+    opacity: 1;
+  }
+  .index-preview :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (hover: none), (pointer: coarse) {
+    .index-preview {
+      display: none;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .index-row-link {
+      grid-template-columns: 34px 1fr auto;
+      height: 40px;
+    }
+    .index-meta {
+      font-size: var(--fs-label);
+    }
+    .filters {
+      grid-column: 1 / -1;
+      order: 3;
+    }
+    .index-archive {
+      width: auto;
+      justify-self: stretch;
+      margin-inline: var(--gutter);
+    }
+  }
+</style>

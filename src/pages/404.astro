@@ -1,0 +1,31 @@
+---
+import Base from "@/layouts/Base.astro";
+import SectionLine from "@/components/SectionLine.astro";
+import { orvasContent } from "@/content/orvas-content";
+const { brand } = orvasContent;
+---
+
+<Base title={`Not found — ${brand.name}`}>
+  <section class="nf" aria-labelledby="nf-title">
+    <SectionLine a="404" b="Not found" id="nf-title" as="h1" />
+    <div class="row4 nf-row">
+      <p>This page does not exist.</p>
+      <span aria-hidden="true"></span>
+      <a class="ulink" href="/">{brand.name}<span class="sq" aria-hidden="true"></span></a>
+      <span aria-hidden="true"></span>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .nf {
+    min-height: 70vh;
+    padding-top: var(--section-pad-top);
+  }
+  .nf-row {
+    margin-top: 6px;
+  }
+  .nf-row .ulink {
+    max-width: 190px;
+  }
+</style>

@@ -1,0 +1,109 @@
+---
+import SectionLine from "./SectionLine.astro";
+import { orvasContent } from "@/content/orvas-content";
+const { footer } = orvasContent;
+---
+
+<footer class="footer" data-footer>
+  <SectionLine a={footer.label[0]} b={footer.label[1]} as="p" />
+  <nav class="footer-cols" aria-label="Directory">
+    {
+      footer.columns.map((col) => (
+        <div class="footer-col">
+          <h2 class="footer-title">
+            <span class="sq" aria-hidden="true" /> {col.title}
+          </h2>
+          <ul>
+            {col.links.map((l) => (
+              <li>
+                <a href={l.href} target={l.external ? "_blank" : undefined} rel={l.external ? "noopener noreferrer" : undefined}>
+                  <span class="roll">
+                    <span>{l.label}</span>
+                    <span aria-hidden="true">{l.label}</span>
+                  </span>
+                  {l.external && <span class="visually-hidden"> (opens in a new tab)</span>}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+  </nav>
+  <div class="wordmark" data-wordmark data-text={footer.wordmark} aria-hidden="true">
+    <span class="wordmark-fallback">{footer.wordmark}</span>
+  </div>
+  <p class="copyright">{footer.copyright}</p>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    display: grid;
+    gap: 28px;
+    padding-top: 80px;
+    padding-bottom: 20px;
+    background: var(--bg);
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: 22.7% 27.3% 1fr auto;
+    padding-inline: var(--gutter);
+  }
+  .footer-col:last-child {
+    text-align: right;
+  }
+  .footer-col:last-child .footer-title {
+    justify-content: flex-end;
+  }
+  .footer-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .footer-col li {
+    line-height: 16px;
+  }
+  .wordmark {
+    position: relative;
+    margin-top: 48px;
+    padding-inline: var(--gutter);
+    color: var(--ink-dim);
+  }
+  .wordmark :global(svg) {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .wordmark-fallback {
+    display: block;
+    font-family: "Arial Black", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 900;
+    font-size: 22vw;
+    line-height: 0.8;
+    letter-spacing: -0.04em;
+    color: var(--ink-faint);
+  }
+  .wordmark.is-built .wordmark-fallback {
+    display: none;
+  }
+  .copyright {
+    padding-inline: var(--gutter);
+    text-align: right;
+    font-size: var(--fs-label);
+  }
+  @media (max-width: 767px) {
+    .footer-cols {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 28px;
+    }
+    .footer-col:last-child {
+      text-align: left;
+    }
+    .footer-col:last-child .footer-title {
+      justify-content: flex-start;
+    }
+  }
+</style>

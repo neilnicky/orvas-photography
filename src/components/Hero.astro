@@ -1,0 +1,240 @@
+---
+import Img from "./Img.astro";
+import { orvasContent } from "@/content/orvas-content";
+import { pad2 } from "@/lib/content";
+const { hero, brand } = orvasContent;
+const markerSlots = [1, 2, 4, 5, 7, 8];
+---
+
+<section class="hero" data-hero aria-labelledby="hero-title">
+  <h1 id="hero-title" class="visually-hidden">{brand.name}, {brand.profession}. {brand.specialities}.</h1>
+  {
+    hero.images.map((image, i) => (
+      <div class="hero-col" data-hero-col>
+        <div class="hero-media" data-wave>
+          <Img image={image} sizes="(max-width: 767px) 100vw, 34vw" priority={i < 3} widths={[480, 720, 960, 1280]} />
+        </div>
+      </div>
+    ))
+  }
+
+  <div class="hero-line" data-hero-line aria-hidden="true">
+    <span class="hero-line-label">{hero.progressLabel}</span>
+    <span class="hero-line-rule"></span>
+    {
+      hero.markers.map((m, i) => (
+        <span class="hero-marker" style={`--slot:${markerSlots[i]};--i:${i / (hero.markers.length - 1)}`}>
+          <span class="hero-marker-tick" />
+          <span class="hero-marker-label">{m}</span>
+        </span>
+      ))
+    }
+  </div>
+
+  <p class="hero-statement">{hero.statement}</p>
+
+  <div class="hero-index">
+    <ol>
+      {
+        hero.list.map((item, i) => (
+          <li>
+            <span class="dim">{pad2(i + 1)}</span>
+            <span>{item}</span>
+          </li>
+        ))
+      }
+    </ol>
+    <a class="ulink" href={hero.cta.href}>{hero.cta.label}<span class="sq" aria-hidden="true"></span></a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    height: 100vh;
+    height: 100svh;
+    min-height: 560px;
+    overflow: hidden;
+    background: var(--bg-deep);
+  }
+  .hero-col {
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    transform: translate3d(0, var(--py, 0px), 0);
+    will-change: transform;
+  }
+  .hero-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  :global(.js:not(.reduced)) .hero-media :global(img) {
+    clip-path: inset(0 0 100% 0);
+  }
+  :global(.js:not(.reduced)) .hero.is-revealing .hero-media :global(img) {
+    animation: hero-reveal var(--dur-curtain) var(--ease-curtain) forwards;
+  }
+  :global(.js:not(.reduced)) .hero.is-revealing .hero-col:nth-child(2) :global(img) {
+    animation-delay: 0.08s;
+  }
+  :global(.js:not(.reduced)) .hero.is-revealing .hero-col:nth-child(3) :global(img) {
+    animation-delay: 0.16s;
+  }
+  :global(.js:not(.reduced)) .hero.is-revealing .hero-col:nth-child(4) :global(img) {
+    animation-delay: 0.24s;
+  }
+  @keyframes hero-reveal {
+    to {
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* UI fades in after the curtains (reference "is-ui-visible"). */
+  :global(.js:not(.reduced)) .hero-statement,
+  :global(.js:not(.reduced)) .hero-index,
+  :global(.js:not(.reduced)) .hero-marker-label {
+    opacity: 0;
+    transition: opacity 0.6s var(--ease-ui);
+  }
+  :global(.js:not(.reduced)) .hero.is-ui .hero-statement,
+  :global(.js:not(.reduced)) .hero.is-ui .hero-index,
+  :global(.js:not(.reduced)) .hero.is-ui .hero-marker-label {
+    opacity: 1;
+  }
+
+  .hero-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    z-index: 3;
+    transform: translate3d(0, var(--hold, 0px), 0);
+    pointer-events: none;
+  }
+  .hero-line-label {
+    position: absolute;
+    left: var(--gutter);
+    top: -7px;
+    font-size: var(--fs-label);
+  }
+  .hero-line-rule {
+    position: absolute;
+    left: 61px;
+    right: var(--gutter);
+    top: 0;
+    height: 1px;
+    background: var(--ink);
+  }
+  .hero-marker {
+    position: absolute;
+    top: 6px;
+    left: calc(100% * var(--slot) / 9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform: translateX(-50%);
+  }
+  .hero-marker-tick {
+    width: 1px;
+    height: 4px;
+    background: var(--ink);
+  }
+  .hero-marker-label {
+    margin-top: 6px;
+    font-size: var(--fs-label);
+    line-height: 1;
+  }
+
+  .hero-statement {
+    position: absolute;
+    left: var(--gutter);
+    bottom: 24px;
+    z-index: 3;
+    max-width: 210px;
+  }
+  .hero-index {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 28px;
+    z-index: 3;
+    width: 190px;
+    display: grid;
+    gap: 22px;
+  }
+  .hero-index ol {
+    display: grid;
+    gap: 4px;
+  }
+  .hero-index li {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  @media (max-width: 767px) {
+    .hero {
+      grid-template-columns: 1fr;
+    }
+    .hero-col {
+      position: absolute;
+      inset: 0;
+    }
+    :global(.js) .hero-col {
+      opacity: 0;
+      animation: hero-loop 9s linear infinite;
+    }
+    :global(.js) .hero-col:nth-child(2) {
+      animation-delay: -0.36s;
+    }
+    :global(.js) .hero-col:nth-child(3) {
+      animation-delay: 2.64s;
+    }
+    :global(.js) .hero-col:nth-child(4) {
+      animation-delay: 5.64s;
+    }
+    :global(.reduced) .hero-col {
+      animation: none !important;
+      opacity: 0;
+    }
+    :global(.reduced) .hero-col:nth-child(2),
+    :global(html:not(.js)) .hero-col:nth-child(2) {
+      opacity: 1;
+    }
+    .hero-marker {
+      left: calc(70px + (100% - 90px - var(--gutter)) * var(--i));
+    }
+    .hero-marker-label {
+      font-size: 7px;
+    }
+    .hero-index {
+      width: 44%;
+      gap: 16px;
+    }
+    .hero-statement {
+      max-width: calc(56% - 2 * var(--gutter) - 8px);
+    }
+  }
+  @keyframes hero-loop {
+    0% {
+      opacity: 0;
+    }
+    4% {
+      opacity: 1;
+    }
+    29% {
+      opacity: 1;
+    }
+    33.333% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+</style>

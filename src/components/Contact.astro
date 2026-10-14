@@ -1,0 +1,254 @@
+---
+import Img from "./Img.astro";
+import SectionLine from "./SectionLine.astro";
+import { orvasContent } from "@/content/orvas-content";
+import { categoryLabel, contactChannels, coverOf, getSeries, pad2, seriesHref } from "@/lib/content";
+const { latest, contact } = orvasContent;
+const items = latest.series.map(getSeries);
+const channels = contactChannels();
+const first = items[0]!;
+---
+
+<section class="final" id={contact.id} data-final aria-labelledby="latest-title">
+  <div class="final-stage">
+    <SectionLine a={latest.label[0]} b={latest.label[1]} managed id="latest-title" />
+
+    <div class="latest">
+      <div class="latest-aside">
+        <p>{latest.statement}</p>
+        <div class="latest-frame" data-latest-frame aria-hidden="true">
+          {
+            items.map((s, i) => (
+              <div data-frame={`latest-${i}`} class:list={["latest-img", { "is-active": i === 0 }]}>
+                <Img image={coverOf(s)} sizes="(max-width: 767px) 50vw, 26vw" widths={[400, 700]} decorative />
+              </div>
+            ))
+          }
+        </div>
+        <dl class="latest-meta" data-latest-meta>
+          <dt>{latest.metaLabels[0]}</dt>
+          <dd data-meta="title">{first.title}</dd>
+          <dt>{latest.metaLabels[1]}</dt>
+          <dd data-meta="category">{categoryLabel(first.category)}</dd>
+          <dt>{latest.metaLabels[2]}</dt>
+          <dd data-meta="year">{first.year}</dd>
+        </dl>
+      </div>
+      <ol class="latest-list">
+        {
+          items.map((s, i) => (
+            <li>
+              <a
+                href={seriesHref(s.slug)}
+                data-latest={`latest-${i}`}
+                data-title={s.title}
+                data-category={categoryLabel(s.category)}
+                data-year={s.year}
+              >
+                <span class="dim">{pad2(i + 1)}</span>
+                <span class="roll">
+                  <span>{s.title}</span>
+                  <span aria-hidden="true">{s.title}</span>
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+
+    <div class="contact">
+      <SectionLine a={contact.label[0]} b={contact.label[1]} managed />
+      <div class="row4 contact-row">
+        <div class="contact-intro">
+          <p>{contact.statement}</p>
+          <p class="dim">{contact.intro}</p>
+        </div>
+        <ul class="contact-channels">
+          {
+            channels.map((c) => (
+              <li>
+                <a class="channel" href={c.href} target={c.external ? "_blank" : undefined} rel={c.external ? "noopener noreferrer" : undefined}>
+                  <span>{c.label}</span>
+                  <span class="dim">{c.detail}</span>
+                  {c.external && <span class="visually-hidden"> (opens in a new tab)</span>}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a class="ulink contact-cta" href={contact.instagramDm} target="_blank" rel="noopener noreferrer">
+          {contact.cta}
+          <span class="visually-hidden"> on Instagram (opens in a new tab)</span>
+          <span class="sq" aria-hidden="true"></span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .final {
+    position: relative;
+    background: var(--bg);
+  }
+  :global(.js:not(.reduced)) .final {
+    height: 220vh;
+  }
+  .final-stage {
+    display: flex;
+    flex-direction: column;
+    padding-top: var(--section-pad-top);
+    padding-bottom: 28px;
+    gap: 28px;
+  }
+  :global(.js:not(.reduced)) .final-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+  }
+
+  .latest {
+    display: grid;
+    grid-template-columns: 34.7% 1fr;
+    padding-inline: var(--gutter);
+    min-height: 0;
+  }
+  .latest-aside {
+    display: grid;
+    gap: 22px;
+    align-content: start;
+    width: 26vw;
+    max-width: 380px;
+  }
+  .latest-aside > p {
+    max-width: 44ch;
+  }
+  .latest-frame {
+    position: relative;
+    aspect-ratio: 3 / 2;
+    overflow: hidden;
+    background: var(--bg-deep);
+  }
+  .latest-img {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+  }
+  .latest-img.is-active {
+    opacity: 1;
+  }
+  .latest-img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 50% 30%;
+  }
+  .latest-meta {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: 16px;
+    row-gap: 2px;
+  }
+  .latest-meta dt {
+    color: var(--ink-dim);
+  }
+  .latest-meta dd {
+    text-align: right;
+  }
+  .latest-list li {
+    border-bottom: 1px solid var(--ink-faint);
+  }
+  .latest-list a {
+    display: grid;
+    grid-template-columns: 56px 1fr;
+    align-items: center;
+    height: 36px;
+  }
+  @media (hover: hover) {
+    .latest-list a:hover {
+      color: var(--accent);
+    }
+  }
+
+  .contact {
+    margin-top: auto;
+    display: grid;
+    gap: 22px;
+  }
+  .contact-intro {
+    display: grid;
+    gap: 4px;
+    padding-right: 24px;
+  }
+  .contact-channels {
+    grid-column: 2 / 4;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 48px;
+    row-gap: 12px;
+    max-width: 640px;
+  }
+  .channel {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--ink-faint);
+    transition: border-color var(--dur-fade) ease;
+  }
+  @media (hover: hover) {
+    .channel:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+  .contact-cta {
+    align-self: start;
+    width: 190px;
+  }
+
+  @media (max-width: 1024px) {
+    .contact-row {
+      grid-template-columns: 1fr 1fr;
+      row-gap: 20px;
+    }
+    .contact-channels {
+      grid-column: 1 / -1;
+      max-width: none;
+    }
+    .contact-cta {
+      grid-column: 2;
+      justify-self: end;
+    }
+  }
+  @media (max-width: 767px) {
+    :global(.js:not(.reduced)) .final {
+      height: auto;
+    }
+    :global(.js:not(.reduced)) .final-stage {
+      position: relative;
+      height: auto;
+    }
+    .latest {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .latest-aside {
+      width: auto;
+      max-width: none;
+    }
+    .contact {
+      margin-top: 40px;
+    }
+    .contact-channels {
+      grid-column: 1 / -1;
+    }
+    .contact-cta {
+      width: auto;
+      grid-column: 1 / -1;
+    }
+  }
+</style>

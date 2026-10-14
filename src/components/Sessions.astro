@@ -1,0 +1,260 @@
+---
+import Img from "./Img.astro";
+import { orvasContent } from "@/content/orvas-content";
+import { splitLine } from "@/lib/content";
+const { sessions } = orvasContent;
+---
+
+<section class="sessions" id={sessions.id} data-sessions aria-labelledby="sessions-title">
+  <h2 id="sessions-title" class="visually-hidden">{sessions.label}</h2>
+  <div class="sessions-stage" data-sessions-stage>
+    <div class="sessions-large" aria-hidden="true">
+      <div class="half half-l" data-half="l">
+        <Img image={sessions.image} sizes="100vw" widths={[960, 1440, 1920, 2600]} decorative />
+      </div>
+      <div class="half half-r" data-half="r">
+        <Img image={sessions.image} sizes="100vw" widths={[960, 1440, 1920, 2600]} decorative />
+      </div>
+    </div>
+
+    <div class="sessions-center" data-sessions-center>
+      <p class="sessions-label" aria-hidden="true">{sessions.label}</p>
+      <div class="sessions-small" data-sessions-small data-wave>
+        {sessions.items.map((item, i) => <Img image={item.image} sizes="(max-width: 767px) 96px, 150px" widths={[300, 450]} class={i === 0 ? "is-on" : ""} />)}
+      </div>
+    </div>
+
+    <div class="sessions-text" aria-hidden="true">
+      <div class="sessions-column" data-sessions-column>
+        {
+          sessions.items.map((item) => (
+            <div class="session-visual">
+              {(() => {
+                const [l, r, word] = splitLine(item.title, "chars");
+                return (
+                  <span class="split-line split-title" data-split-line data-word={word ? "" : undefined}>
+                    <span class="sl">{l}</span>
+                    <span class="sr">{r}</span>
+                  </span>
+                );
+              })()}
+              {item.copy.map((line) => {
+                const [l, r, word] = splitLine(line, "words");
+                return (
+                  <span class="split-line" data-split-line data-word={word ? "" : undefined}>
+                    <span class="sl">{l}</span>
+                    <span class="sr">{r}</span>
+                  </span>
+                );
+              })}
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+
+  <ol class="sessions-list">
+    {
+      sessions.items.map((item) => (
+        <li class="session">
+          <Img image={item.image} sizes="40vw" widths={[480, 800]} class="session-img" />
+          <h3>{item.title}</h3>
+          <p>{item.copy.join(" ")}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<style>
+  .sessions {
+    position: relative;
+    background: var(--bg);
+  }
+  /* ---------- static (no JS / reduced motion) ---------- */
+  .sessions-stage {
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .sessions-large {
+    position: absolute;
+    inset: var(--header-h) var(--gutter) var(--gutter);
+  }
+  .half {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 50%;
+    overflow: hidden;
+    transform: translate3d(var(--x, 0px), 0, 0);
+    will-change: transform;
+  }
+  .half-l {
+    left: 0;
+  }
+  .half-r {
+    right: 0;
+  }
+  .half :global(img) {
+    position: absolute;
+    top: 0;
+    width: 200%;
+    max-width: none;
+    height: 100%;
+    object-fit: cover;
+  }
+  .half-l :global(img) {
+    left: 0;
+  }
+  .half-r :global(img) {
+    right: 0;
+  }
+  .sessions-center,
+  .sessions-text {
+    display: none;
+  }
+  .sessions-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--gutter);
+    padding: 64px var(--gutter) 96px;
+  }
+  .session {
+    display: grid;
+    gap: 12px;
+    align-content: start;
+  }
+  .session :global(.session-img) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+  }
+  .session p {
+    color: var(--ink-dim);
+    max-width: 36ch;
+    text-transform: none;
+    font-size: 12px;
+    line-height: 17px;
+  }
+  @media (max-width: 767px) {
+    .sessions-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- choreographed ---------- */
+  :global(.js:not(.reduced)) .sessions {
+    height: 680vh;
+  }
+  :global(.js:not(.reduced)) .sessions-stage {
+    position: sticky;
+    top: 0;
+  }
+  :global(.js:not(.reduced)) .sessions-list {
+    position: absolute !important;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    padding: 0;
+  }
+  :global(.js:not(.reduced)) .sessions-center {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    z-index: 2;
+    display: grid;
+    justify-items: center;
+    gap: 10px;
+    transform: translate(-50%, calc(-50% - 12px));
+  }
+  .sessions-label {
+    font-size: var(--fs-label);
+    opacity: var(--label-o, 0);
+  }
+  .sessions-small {
+    position: relative;
+    width: var(--small-w);
+    height: var(--small-h);
+    clip-path: inset(var(--st, 0%) 0 var(--sb, 100%) 0);
+  }
+  .sessions-small :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+  }
+  .sessions-small :global(img.is-on) {
+    opacity: 1;
+  }
+  .sessions {
+    --small-w: 150px;
+    --small-h: 200px;
+  }
+  @media (max-width: 1024px) {
+    .sessions {
+      --small-w: 120px;
+      --small-h: 160px;
+    }
+  }
+  @media (max-width: 767px) {
+    .sessions {
+      --small-w: 96px;
+      --small-h: 128px;
+    }
+  }
+
+  :global(.js:not(.reduced)) .sessions-text {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: block;
+    pointer-events: none;
+  }
+  .sessions-column {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: grid;
+    gap: 64vh;
+    transform: translate3d(0, var(--ty, 100vh), 0);
+    will-change: transform;
+  }
+  .session-visual {
+    display: grid;
+    gap: 2px;
+  }
+  .split-line {
+    --gap: 0px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    font-size: 10px;
+    line-height: 15px;
+    text-transform: none;
+    letter-spacing: 0.02em;
+  }
+  .split-title {
+    margin-bottom: 12px;
+    text-transform: uppercase;
+    font-size: var(--fs-label);
+    letter-spacing: var(--tracking);
+  }
+  .sl {
+    text-align: right;
+    transform: translate3d(calc(var(--gap) * -1), 0, 0);
+  }
+  .sr {
+    text-align: left;
+    transform: translate3d(var(--gap), 0, 0);
+  }
+  .split-line[data-word] .sr {
+    padding-left: 0.6em;
+  }
+</style>

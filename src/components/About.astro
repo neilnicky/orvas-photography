@@ -1,0 +1,189 @@
+---
+import Img from "./Img.astro";
+import SectionLine from "./SectionLine.astro";
+import { orvasContent } from "@/content/orvas-content";
+import { getSeries, pad2, seriesHref } from "@/lib/content";
+import { motion } from "@/motion/config";
+const { about, strip } = orvasContent;
+const items = strip.items.map((item, i) => ({
+  ...item,
+  title: getSeries(item.series).title,
+  crop: motion.strip.crop[i % motion.strip.crop.length] ?? 0,
+  parallax: motion.strip.parallax[i % motion.strip.parallax.length] ?? 40,
+  exit: motion.strip.exitSpeed[i % motion.strip.exitSpeed.length] ?? 1,
+}));
+---
+
+<section class="about" id={about.id} data-about aria-labelledby="about-title">
+  <div class="about-stage">
+    <div class="about-top">
+      <SectionLine a={about.label[0]} b={about.label[1]} managed id="about-title" />
+      <div class="row4 about-row">
+        <p>{about.statement}</p>
+        <span aria-hidden="true"></span>
+        <div class="about-body">
+          <p>{about.body}</p>
+          <ol class="about-list">
+            {about.list.map((item, i) => <li><span class="dim">{pad2(i + 1)}</span> {item}</li>)}
+          </ol>
+        </div>
+        <dl class="meta-pairs">
+          {
+            about.meta.map(([k, v]) => (
+              <>
+                <dt>{k}</dt>
+                <dd>{v}</dd>
+              </>
+            ))
+          }
+        </dl>
+      </div>
+    </div>
+
+    <div class="strip-block">
+      <SectionLine a={strip.label[0]} b={strip.label[1]} managed as="p" />
+      <div class="strip" data-strip>
+        <div class="strip-track" data-strip-track>
+          {
+            [0, 1].map((copy) =>
+              items.map((item, i) => (
+                <a
+                  class="strip-item"
+                  href={seriesHref(item.series)}
+                  data-strip-item
+                  data-crop={item.crop}
+                  data-parallax={item.parallax}
+                  data-exit={item.exit}
+                  aria-hidden={copy === 1 ? "true" : undefined}
+                  tabindex={copy === 1 ? -1 : undefined}
+                >
+                  <span class="strip-media" data-wave>
+                    <Img image={item.image} sizes="(max-width: 767px) 62vw, (max-width: 1024px) 34vw, 20vw" widths={[400, 640, 900]} decorative={copy === 1} />
+                  </span>
+                  <span class="strip-num">{pad2(i + 1)}</span>
+                  <span class="visually-hidden">{item.title}</span>
+                </a>
+              )),
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    position: relative;
+    background: var(--bg);
+  }
+  :global(.js:not(.reduced)) .about {
+    height: 300vh;
+  }
+  .about-stage {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 64px;
+    padding-top: var(--section-pad-top);
+  }
+  :global(.js:not(.reduced)) .about-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .about-row {
+    margin-top: 6px;
+  }
+  .about-body {
+    display: grid;
+    gap: 22px;
+  }
+  .about-list {
+    display: grid;
+    gap: 2px;
+  }
+
+  .strip-block {
+    display: grid;
+    gap: 22px;
+  }
+  .strip {
+    position: relative;
+    height: 50vh;
+    height: 50svh;
+    overflow: hidden;
+    touch-action: pan-y;
+    user-select: none;
+  }
+  :global(.reduced) .strip,
+  :global(html:not(.js)) .strip {
+    overflow-x: auto;
+  }
+  .strip-track {
+    display: flex;
+    height: 100%;
+    width: max-content;
+    will-change: transform;
+  }
+  :global(.reduced) .strip-item[aria-hidden="true"],
+  :global(html:not(.js)) .strip-item[aria-hidden="true"] {
+    display: none;
+  }
+  .strip-item {
+    --ct: 0px;
+    --cb: 0px;
+    --py: 0px;
+    position: relative;
+    display: block;
+    width: 20vw;
+    height: 100%;
+    flex: none;
+  }
+  .strip-media {
+    position: absolute;
+    inset: 0;
+    clip-path: inset(var(--ct) 0 var(--cb) 0);
+    transform: translate3d(0, var(--py), 0);
+  }
+  .strip-media :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+  }
+  .strip-num {
+    position: absolute;
+    left: 8px;
+    bottom: calc(var(--cb) + 8px);
+    font-size: var(--fs-label);
+    transform: translate3d(0, var(--py), 0);
+    mix-blend-mode: difference;
+  }
+  .strip-item:focus-visible {
+    outline-offset: -4px;
+  }
+  .strip.is-dragging {
+    cursor: grabbing;
+  }
+
+  @media (max-width: 1024px) {
+    .strip-item {
+      width: 34vw;
+    }
+  }
+  @media (max-width: 767px) {
+    .strip-item {
+      width: 62vw;
+    }
+    .strip {
+      height: 56svh;
+    }
+    .about-stage {
+      gap: 36px;
+    }
+  }
+</style>
