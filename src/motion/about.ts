@@ -14,7 +14,7 @@ interface Item {
 }
 
 /**
- * About + strip (reference §3):
+ * About + strip:
  * - stage pins for 200vh; the About line draws (0→.35), then the strip line (.35→.7)
  * - each image has its own crop; after a short hold the crop morphs from
  *   top-aligned to bottom-aligned with scroll

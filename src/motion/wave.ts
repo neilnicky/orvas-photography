@@ -2,7 +2,7 @@ import { motion } from "./config";
 import { env, onFrame } from "./runtime";
 
 /**
- * Offform "image wave": while the pointer moves over an image, a canvas copy is
+ * Image wave: while the pointer moves over an image, a canvas copy is
  * redrawn in 2px horizontal strips, each shifted by a sum of sines. The effect
  * eases in while moving and decays ~70ms after the pointer stops.
  * Desktop + fine pointer only; never under reduced motion.

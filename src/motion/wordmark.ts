@@ -27,7 +27,7 @@ function el<K extends keyof SVGElementTagNameMap>(name: K, attrs: Record<string,
 }
 
 /**
- * Footer wordmark (reference §8): each giant letter is a mask filled with rows
+ * Footer wordmark: each giant letter is a mask filled with rows
  * of tiny repeated brand text. Under the pointer, rows near the cursor split at
  * the cursor X and part left/right, opening only the hovered letter.
  * Static on touch devices and under reduced motion.

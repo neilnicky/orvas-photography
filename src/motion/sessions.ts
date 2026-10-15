@@ -3,7 +3,7 @@ import { env, onResize, onScroll, pageTop } from "./runtime";
 import { attachWave } from "./wave";
 
 /**
- * Sessions (reference §5 "Services"): pinned full-bleed image splits open from
+ * Sessions: pinned full-bleed image splits open from
  * the centre, a small portrait reveals top→bottom in the gap, session copy scrolls
  * through and splits around the small image, small image crossfades per session,
  * then everything reverses.

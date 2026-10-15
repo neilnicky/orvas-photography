@@ -3,8 +3,6 @@
 
 /* =========================================================
    TOKENS
-   Derived from docs/reference-analysis.md §2, adapted in
-   docs/design-direction.md (accent, ink).
    ========================================================= */
 :root {
   --bg: #0b0b0b;
@@ -167,7 +165,7 @@ ol {
   color: var(--ink-dim);
 }
 
-/* Reference 4-column row: label / taxonomy / paragraph / meta. */
+/* 4-column row: label / taxonomy / paragraph / meta. */
 .row4 {
   display: grid;
   grid-template-columns: 22.7% 27.3% 1fr auto;
@@ -202,7 +200,7 @@ ol {
   color: var(--ink-dim);
 }
 
-/* Underline link with square, as reference "VIEW ALL TALENTS ■" */
+/* Underline link with square, as in "VIEW THE INDEX ■" */
 .ulink {
   position: relative;
   display: flex;

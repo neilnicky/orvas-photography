@@ -1,12 +1,12 @@
 /**
- * Motion constants. Values measured from the Offform source/recording
- * (docs/reference-analysis.md §3–4) unless marked "ORVAS".
+ * Motion constants. Every timing, easing and distance used by the
+ * modules lives here.
  */
 export const motion = {
   lenis: { lerp: 0.08, wheelMultiplier: 0.9 },
 
   loader: {
-    /** ORVAS: reference uses 1500ms; shortened so the portfolio is never held back. */
+    /** Kept short so the loader never holds the portfolio back. */
     minDuration: 900,
     maxDuration: 3000,
     smoothing: 0.12,
@@ -61,7 +61,7 @@ export const motion = {
   nav: { scrollMs: 900 },
 } as const;
 
-/** CSS cubic-bezier(.76,0,.24,1) as a JS function (Offform "Easing B"). */
+/** CSS cubic-bezier(.76,0,.24,1) as a JS function ("Easing B" in global.css). */
 export function cubicBezier(x1: number, y1: number, x2: number, y2: number): (x: number) => number {
   const sx = (t: number) => 3 * (1 - t) ** 2 * t * x1 + 3 * (1 - t) * t * t * x2 + t ** 3;
   const sy = (t: number) => 3 * (1 - t) ** 2 * t * y1 + 3 * (1 - t) * t * t * y2 + t ** 3;

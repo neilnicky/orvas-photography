@@ -18,7 +18,7 @@ function animateClip(el: HTMLElement, from: number, to: number, ms: number) {
 }
 
 /**
- * Featured series (reference §6 "Selected campaigns"): timed gallery —
+ * Featured series: timed gallery —
  * hold 2300ms, current card clips shut upward (950ms), next opens downward (950ms).
  * Paused while hovered; runs only while visible; resets when fully off-screen.
  */

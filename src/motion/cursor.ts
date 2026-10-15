@@ -1,6 +1,6 @@
 import { env } from "./runtime";
 
-/** 12px white square, mix-blend difference, follows the pointer 1:1 (as reference). */
+/** 12px white square, mix-blend difference, follows the pointer 1:1. */
 export function initCursor() {
   if (!env.finePointer || window.matchMedia("(forced-colors: active)").matches) return;
   const el = document.createElement("div");

@@ -4,7 +4,7 @@ import { attachWave } from "./wave";
 
 /**
  * Loader → hero hand-off.
- * Progress = min(asset progress, time progress) eased by 0.12/frame (reference),
+ * Progress = min(asset progress, time progress) eased by 0.12/frame,
  * min 900ms, hard cap 3s. The loader line sits at 50vh, exactly where the hero
  * line is, so removing the loader leaves the line in place.
  */

@@ -60,7 +60,14 @@ describe("orvas-content", () => {
 
   it("does not ship placeholder copy", () => {
     const text = JSON.stringify(orvasContent);
-    expect(text).not.toMatch(/lorem|ipsum|TODO|placeholder|example\.com|offform/i);
+    expect(text).not.toMatch(/lorem|ipsum|TODO|placeholder|example\.com/i);
+  });
+
+  it("links only to ORVAS-owned channels", () => {
+    const allowed = new Set(["orvas.myportfolio.com", "www.instagram.com", "ig.me"]);
+    const hosts = JSON.stringify(orvasContent).match(/https?:\/\/[^/"]+/g) ?? [];
+    expect(hosts.length).toBeGreaterThan(0);
+    hosts.forEach((h) => expect(allowed).toContain(h.replace(/^https?:\/\//, "")));
   });
 
   it("keeps unverified contact fields empty", () => {

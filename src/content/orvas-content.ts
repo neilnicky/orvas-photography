@@ -3,7 +3,6 @@
  *
  * Every string, link and photograph shown on the site lives here.
  * Image `src` values are paths relative to `src/assets/` (see src/lib/images.ts).
- * Sources and verification notes: docs/orvas-brand-research.md.
  *
  * To add a series: drop JPEGs into src/assets/work/<slug>/ and add an entry to `series`.
  * To activate email or booking CTAs: set `contact.email` / `contact.booking.url`.

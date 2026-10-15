@@ -3,7 +3,7 @@ import { env, onResize, onScroll, pageTop } from "./runtime";
 import { attachWave } from "./wave";
 
 /**
- * Latest + contact (reference §7 "Partners + Contact"): hovering or focusing a
+ * Latest + contact: hovering or focusing a
  * row swaps the aside image and meta immediately; the Latest line builds in the
  * first half of the pin, the Contact line in the second.
  */

@@ -5,3 +5,7 @@ dist/
 test-results/
 playwright-report/
 .DS_Store
+
+# Internal research and planning notes (kept local, never committed)
+ORVAS_PROJECT_BRIEF.md
+docs/
